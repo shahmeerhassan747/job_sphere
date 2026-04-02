@@ -1,0 +1,19 @@
+from fastapi import APIRouter
+
+# Import individual routers
+from app.api.hello import router as hello_router
+
+class APIRouterRegistry:
+    """
+    Central registry for all API routers.
+    """
+
+    def __init__(self):
+        self.router = APIRouter()
+        self.include_all()
+
+    def include_all(self):
+        # Only include the hello router
+        self.router.include_router(hello_router)
+
+api_router_registry = APIRouterRegistry()

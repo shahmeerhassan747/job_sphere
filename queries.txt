@@ -1,0 +1,256 @@
+============================================================
+           JOBSITE DATABASE QUERIES
+============================================================
+
+
+============================================================
+1. USERS TABLE
+============================================================
+
+-- Create Table
+CREATE TABLE users (
+    id         SERIAL UNIQUE PRIMARY KEY,
+    name       VARCHAR(500),
+    email      VARCHAR(500),
+    password   VARCHAR(500),
+    role       VARCHAR(500),
+    avatar     TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert
+INSERT INTO users (name, email, password, role, avatar)
+VALUES
+    ('Shahmeer Ali', 'shahmeer@gmail.com', '123456', 'jobseeker', NULL),
+    ('Ayyan',        'ayyan@gmail.com',    '123456', 'jobseeker', NULL),
+    ('Ahmad',        'ahmad@gmail.com',    '123456', 'jobseeker', NULL),
+    ('Shayan',       'shayan@gmail.com',   '123456', 'jobseeker', NULL),
+    ('Jafar',        'jafar@gmail.com',    '123456', 'jobseeker', NULL);
+
+-- Select All
+SELECT * FROM users;
+
+-- Select One
+SELECT * FROM users WHERE id = 1;
+
+-- Select by Email
+SELECT * FROM users WHERE email = 'shahmeer@gmail.com';
+
+-- Select by Role
+SELECT * FROM users WHERE role = 'employer';
+
+-- Update All Fields
+UPDATE users
+SET name     = 'Shahmeer Ahmed',
+    email    = 'shahmeer@gmail.com',
+    password = 'newpassword123',
+    role     = 'employer',
+    avatar   = 'data:image/png;base64,iVBORw0KGgo...'
+WHERE id = 1;
+
+-- Delete
+DELETE FROM users WHERE id = 1;
+
+-- Delete All
+DELETE FROM users;
+
+
+============================================================
+2. COMPANIES TABLE
+============================================================
+
+-- Create Table
+CREATE TABLE companies (
+    id          SERIAL UNIQUE PRIMARY KEY,
+    name        VARCHAR(500),
+    email       VARCHAR(500),
+    logo        TEXT,
+    industry    VARCHAR(500),
+    location    VARCHAR(500),
+    website     VARCHAR(500),
+    description TEXT,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert
+INSERT INTO companies (name, email, logo, industry, location, website, description)
+VALUES
+    ('Google',  'google@gmail.com',  NULL, 'Technology', 'USA',    'google.com',  'Search engine company'),
+    ('Meta',    'meta@gmail.com',    NULL, 'Technology', 'USA',    'meta.com',    'Social media company'),
+    ('Netflix', 'netflix@gmail.com', NULL, 'Streaming',  'USA',    'netflix.com', 'Video streaming company'),
+    ('Amazon',  'amazon@gmail.com',  NULL, 'E-Commerce', 'USA',    'amazon.com',  'E-commerce giant'),
+    ('Netsol',  'netsol@gmail.com',  NULL, 'Technology', 'Lahore', 'netsol.com',  'Pakistani IT company');
+
+-- Select All
+SELECT * FROM companies;
+
+-- Select One
+SELECT * FROM companies WHERE id = 1;
+
+-- Update All Fields
+UPDATE companies
+SET name        = 'Google LLC',
+    email       = 'updated@google.com',
+    logo        = 'data:image/png;base64,iVBORw0KGgo...',
+    industry    = 'Technology',
+    location    = 'California USA',
+    website     = 'google.com',
+    description = 'World largest search engine'
+WHERE id = 1;
+
+-- Delete
+DELETE FROM companies WHERE id = 1;
+
+
+============================================================
+3. JOBS TABLE
+============================================================
+
+-- Create Table
+CREATE TABLE jobs (
+    id          SERIAL UNIQUE PRIMARY KEY,
+    title       VARCHAR(500),
+    description TEXT,
+    location    VARCHAR(500),
+    type        VARCHAR(100),
+    company_id  INT REFERENCES companies(id),
+    posted_by   INT REFERENCES users(id),
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert
+INSERT INTO jobs (title, description, location, type, company_id, posted_by)
+VALUES
+    ('Frontend Developer', 'Build UI components',         'Lahore',  'Full-Time', 5, 2),
+    ('Backend Developer',  'Build REST APIs',             'Remote',  'Full-Time', 6, 2),
+    ('UI/UX Designer',     'Design mobile apps',          'Karachi', 'Part-Time', 2, 3),
+    ('Data Scientist',     'Analyze large datasets',      'USA',     'Full-Time', 3, 4),
+    ('DevOps Engineer',    'Manage cloud infrastructure', 'Remote',  'Contract',  4, 5);
+
+-- Select All
+SELECT * FROM jobs;
+
+-- Select One
+SELECT * FROM jobs WHERE id = 6;
+
+-- Update All Fields
+UPDATE jobs
+SET title       = 'Senior Frontend Developer',
+    description = 'Build advanced UI components',
+    location    = 'Remote',
+    type        = 'Full-Time',
+    company_id  = 1,
+    posted_by   = 2
+WHERE id = 6;
+
+-- Delete
+DELETE FROM jobs WHERE id = 6;
+
+
+============================================================
+4. SALARIES TABLE
+============================================================
+
+-- Create Table
+CREATE TABLE salaries (
+    id          SERIAL UNIQUE PRIMARY KEY,
+    min_salary  INT,
+    max_salary  INT,
+    currency    VARCHAR(10),
+    location    VARCHAR(500),
+    job_id      INT REFERENCES jobs(id),
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert
+INSERT INTO salaries (min_salary, max_salary, currency, location, job_id)
+VALUES
+    (80000,  120000, 'USD', 'Lahore',  6),
+    (90000,  150000, 'USD', 'Remote',  7),
+    (60000,  100000, 'USD', 'Karachi', 8),
+    (120000, 200000, 'USD', 'USA',     9),
+    (95000,  140000, 'USD', 'Remote',  10);
+
+-- Select All
+SELECT * FROM salaries;
+
+-- Select One
+SELECT * FROM salaries WHERE id = 1;
+
+-- Update All Fields
+UPDATE salaries
+SET min_salary = 90000,
+    max_salary = 130000,
+    currency   = 'USD',
+    location   = 'Remote',
+    job_id     = 6
+WHERE id = 1;
+
+-- Delete
+DELETE FROM salaries WHERE id = 1;
+
+
+============================================================
+5. JOIN QUERIES
+============================================================
+
+-- 1. Get All Jobs with Company and Salary
+SELECT j.id, j.title, j.location, j.type,
+       c.name AS company_name, c.logo AS company_logo,
+       s.min_salary, s.max_salary, s.currency
+FROM jobs j
+JOIN companies c ON j.company_id = c.id
+LEFT JOIN salaries s ON s.job_id = j.id;
+
+-- 2. Get Specific Job Details
+SELECT j.id, j.title, j.description, j.location, j.type,
+       c.name AS company_name, c.logo, c.website, c.industry,
+       s.min_salary, s.max_salary, s.currency
+FROM jobs j
+JOIN companies c ON j.company_id = c.id
+LEFT JOIN salaries s ON s.job_id = j.id
+WHERE j.id = 6;
+
+-- 3. Get All Companies with Total Jobs
+SELECT c.id, c.name, c.industry, c.location,
+       COUNT(j.id) AS total_jobs
+FROM companies c
+LEFT JOIN jobs j ON j.company_id = c.id
+GROUP BY c.id, c.name, c.industry, c.location;
+
+-- 4. Get All Salaries with Job and Company
+SELECT s.id, s.min_salary, s.max_salary, s.currency,
+       j.title AS job_title, j.location,
+       c.name  AS company_name
+FROM salaries s
+JOIN jobs j ON s.job_id = j.id
+JOIN companies c ON j.company_id = c.id;
+
+-- 5. Search Jobs by Title
+SELECT j.id, j.title, j.location, j.type,
+       c.name AS company_name,
+       s.min_salary, s.max_salary
+FROM jobs j
+JOIN companies c ON j.company_id = c.id
+LEFT JOIN salaries s ON s.job_id = j.id
+WHERE j.title ILIKE '%developer%';
+
+-- 6. Search Jobs by Location
+SELECT j.id, j.title, j.location, j.type,
+       c.name AS company_name,
+       s.min_salary, s.max_salary
+FROM jobs j
+JOIN companies c ON j.company_id = c.id
+LEFT JOIN salaries s ON s.job_id = j.id
+WHERE j.location ILIKE '%remote%';
+
+-- 7. Get Jobs Posted by Specific User
+SELECT j.id, j.title, j.location, j.type,
+       c.name AS company_name,
+       u.name AS posted_by
+FROM jobs j
+JOIN companies c ON j.company_id = c.id
+JOIN users u ON j.posted_by = u.id
+WHERE u.id = 2;
+
+============================================================

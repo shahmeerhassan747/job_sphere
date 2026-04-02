@@ -1,0 +1,232 @@
+"""SQLAlchemy models consolidated from models folder."""
+
+from __future__ import annotations
+
+from sqlalchemy import Column, Integer, String, ForeignKey, CheckConstraint
+
+from app.database import Base
+
+
+class CollectionOfInfo(Base):
+    __tablename__ = "collection_of_info"
+    __table_args__ = {"extend_existing": True}  # Allow table redefinition
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    sensitive_info = Column(String(1000), nullable=True)
+    social_info = Column(Integer, nullable=True)
+    derivative_data = Column(String(1000), nullable=True)
+    geo_location = Column(Integer, nullable=True)
+    mobile_features = Column(String(1000), nullable=True)
+    mobile_devices = Column(Integer, nullable=True)
+    notification = Column(Integer, nullable=True)
+    offer_wall = Column(Integer, nullable=True)
+    google_apis = Column(Integer, nullable=True)
+    other_services = Column(Integer, nullable=True)
+    personal_info = Column(String(1000), nullable=True)
+    user_id = Column(Integer, nullable=True)
+    draft = Column(Integer, server_default="1", nullable=True)
+
+    def __repr__(self):
+        return f"<CollectionOfInfo(id={self.id}, personal_info={self.personal_info})>"
+
+
+class DisclosureOfInfo(Base):
+    __tablename__ = "disclosure_of_info"
+    __table_args__ = {"extend_existing": True}
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    sell_on_third_parties = Column(String(1000), nullable=True)
+    ai_services = Column(String(1000), nullable=True)
+    online_payments = Column(String(1000), nullable=True)
+    upload_content = Column(Integer, nullable=True)
+    third_party_ads = Column(Integer, nullable=True)
+    disclose_to_business_affliate = Column(Integer, nullable=True)
+    disclose_to_business_partners = Column(Integer, nullable=True)
+    retentation = Column(Integer, nullable=True)
+    other_third_parties = Column(Integer, server_default="0", nullable=True)
+    security_measures = Column(Integer, nullable=True)
+    agreements_with_third_parties = Column(Integer, nullable=True)
+    interaction_with_usrs = Column(Integer, nullable=True)
+    user_id = Column(Integer, nullable=True)
+    draft = Column(Integer, server_default="1", nullable=True)
+
+    def __repr__(self):
+        return f"<DisclosureOfInfo(id={self.id}, security_measures={self.security_measures})>"
+
+
+class EuropeConsiderations(Base):
+    __tablename__ = "europe_considerations"
+    __table_args__ = {"extend_existing": True}
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    eea_and_uk_representative = Column(Integer, nullable=True)
+    eea_representative = Column(String(1000), nullable=True)
+    uk_representative = Column(String(1000), nullable=True)
+    international_transfers = Column(String(1000), nullable=True)
+    dpf = Column(String(1000), nullable=True)
+    user_id = Column(Integer, nullable=True)
+    draft = Column(Integer, server_default="1", nullable=True)
+
+    def __repr__(self):
+        return f"<EuropeConsiderations(id={self.id}, eea_representative={self.eea_representative})>"
+
+
+class FinalDetails(Base):
+    __tablename__ = "final_details"
+    __table_args__ = {"extend_existing": True}
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    additional_clauses = Column(String(100), nullable=True)
+    legal_name = Column(String(100), nullable=True)
+    dba = Column(String(100), nullable=True)
+    emergency_email = Column(String(100), nullable=True)
+    emergency_number = Column(String(100), nullable=True)
+    full_address = Column(String(100), nullable=True)
+    name_of_policy = Column(String(100), nullable=True)
+    version_date = Column(String(100), nullable=True)
+    other_regions = Column(String(100), nullable=True)
+    user_id = Column(Integer, nullable=True)
+    draft = Column(Integer, server_default="1", nullable=True)
+
+    def __repr__(self):
+        return f"<FinalDetails(id={self.id}, legal_name={self.legal_name}, emergency_email={self.emergency_email})>"
+
+
+class PolicyUses(Base):
+    __tablename__ = "policy_uses"
+    __table_args__ = {"extend_existing": True}
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    mobile_app = Column(String(100), nullable=True)
+    website = Column(String(100), nullable=True)
+    facebook_app = Column(String(100), nullable=True)
+    english_preferences = Column(Integer, nullable=True)
+    use_description = Column(String(100), nullable=True)
+    user_id = Column(Integer, nullable=True)
+    draft = Column(Integer, server_default="1", nullable=True)
+
+    def __repr__(self):
+        return f"<PolicyUses(id={self.id}, mobile_app={self.mobile_app}, website={self.website})>"
+
+
+class PrivacyPolicy(Base):
+    __tablename__ = "privacy_policy"
+    __table_args__ = {"extend_existing": True}
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    policy_uses_id = Column(Integer, ForeignKey("policy_uses.id"), nullable=False)
+    use_of_info_id = Column(Integer, ForeignKey("use_of_info.id"), nullable=False)
+    collection_of_info_id = Column(
+        Integer, ForeignKey("collection_of_info.id"), nullable=False
+    )
+    disclosure_of_info_id = Column(
+        Integer, ForeignKey("disclosure_of_info.id"), nullable=False
+    )
+    use_of_tracking_tech_id = Column(
+        Integer, ForeignKey("use_of_tracking_tech.id"), nullable=False
+    )
+    usr_rights_id = Column(Integer, ForeignKey("user_rights.id"), nullable=False)
+    final_details_id = Column(Integer, ForeignKey("final_details.id"), nullable=False)
+    user_id = Column(Integer, nullable=False)
+    usr_info_id = Column(Integer, ForeignKey("usr_info.id"), nullable=False)
+    us_considerations_id = Column(
+        Integer, ForeignKey("us_considerations.id"), nullable=True
+    )
+    europe_considerations_id = Column(
+        Integer, ForeignKey("europe_considerations.id"), nullable=True
+    )
+
+    def __repr__(self):
+        return f"<PrivacyPolicy(id={self.id}, user_id={self.user_id})>"
+
+
+class UsConsiderations(Base):
+    __tablename__ = "us_considerations"
+    __table_args__ = {"extend_existing": True}
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    disclosure_of_info = Column(String(100), nullable=True)
+    california_customer_records = Column(String(100), nullable=True)
+    identifiers = Column(String(100), nullable=True)
+    characteristics_person = Column(String(100), nullable=True)
+    consumer_data = Column(String(100), nullable=True)
+    biometric_data = Column(String(100), nullable=True)
+    internet_activity = Column(String(100), nullable=True)
+    geographic_location = Column(String(100), nullable=True)
+    sensory_data = Column(String(100), nullable=True)
+    professional_and_empoyement = Column(String(100), nullable=True)
+    education_info = Column(String(100), nullable=True)
+    inferences = Column(String(100), nullable=True)
+    sensitive_personal_info = Column(String(100), nullable=True)
+    ccpa_metrics = Column(String(100), nullable=True)
+    financial_incentives = Column(Integer, server_default="0", nullable=True)
+    inquiries = Column(String(100), nullable=True)
+    user_id = Column(Integer, nullable=True)
+    draft = Column(Integer, server_default="1", nullable=True)
+
+    def __repr__(self):
+        return f"<UsConsiderations(id={self.id}, disclosure_of_info={self.disclosure_of_info})>"
+
+
+class UseOfInfo(Base):
+    __tablename__ = "use_of_info"
+    __table_args__ = {"extend_existing": True}
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    contract_interests = Column(String(1000), nullable=True)
+    legitimate_interest = Column(String(1000), nullable=True)
+    promotional_com = Column(String(1000), nullable=True)
+    user_id = Column(Integer, nullable=True)
+    draft = Column(Integer, server_default="1", nullable=True)
+
+    def __repr__(self):
+        return (
+            f"<UseOfInfo(id={self.id}, contract_interests={self.contract_interests})>"
+        )
+
+
+class UseOfTrackingTech(Base):
+    __tablename__ = "use_of_tracking_tech"
+    __table_args__ = {"extend_existing": True}
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    tracking_tech = Column(String(100), nullable=True)
+    google_analytics = Column(String(100), nullable=True)
+    user_id = Column(Integer, nullable=True)
+    draft = Column(Integer, server_default="1", nullable=True)
+
+    def __repr__(self):
+        return f"<UseOfTrackingTech(id={self.id}, tracking_tech={self.tracking_tech})>"
+
+
+class UserRights(Base):
+    __tablename__ = "user_rights"
+    __table_args__ = {"extend_existing": True}
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    dpo = Column(String(100), nullable=True)
+    consent_settings = Column(Integer, nullable=True)
+    data_access_request = Column(String(100), nullable=True)
+    gpc = Column(Integer, nullable=True)
+    user_id = Column(Integer, nullable=True)
+    draft = Column(Integer, server_default="1", nullable=True)
+
+    def __repr__(self):
+        return f"<UserRights(id={self.id}, dpo={self.dpo}, gpc={self.gpc})>"
+
+
+class UsrInfo(Base):
+    __tablename__ = "usr_info"
+    __table_args__ = {"extend_existing": True}
+
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    us_location = Column(Integer, nullable=True)
+    eu_location = Column(Integer, nullable=True)
+    canada_location = Column(Integer, nullable=True)
+    account_creation = Column(String(1000), nullable=True)
+    age = Column(String(1000), nullable=True)
+    user_id = Column(Integer, nullable=True)
+    draft = Column(Integer, server_default="1", nullable=True)
+
+    def __repr__(self):
+        return f"<UsrInfo(id={self.id}, us_location={self.us_location}, eu_location={self.eu_location})>"

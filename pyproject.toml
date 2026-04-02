@@ -1,0 +1,23 @@
+[project]
+name = "dev-backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "sqlalchemy",
+    "psycopg2-binary",
+    "alembic",
+    "python-dotenv",
+    "pydantic-settings",
+    "python-jose[cryptography]",
+    "requests",
+    "email-validator",
+    "passlib>=1.7.4",
+]
+
+[tool.pyre]
+source_directories = ["."]
+search_path = [".venv/lib/python3.14/site-packages"]

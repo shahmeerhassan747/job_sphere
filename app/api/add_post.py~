@@ -1,0 +1,51 @@
+
+# FILE: resource.py
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+from typing import Any
+
+from app.database import get_db
+from app.database.schema import Post
+from app.api.modal.add_post_models import PostCreate, PostResponse
+
+router = APIRouter()
+
+@router.post("/posts", response_model=PostResponse)
+def create_post(
+    *,
+    db: Session = Depends(get_db),
+    post_data: PostCreate
+) -> Any:
+    """
+    Create a new post.
+    """
+    try:
+        # Create new post instance
+        db_post = Post(
+            profile_name=post_data.profile_name,
+            likes=post_data.likes,
+            hours=post_data.hours,
+            description=post_data.description,
+            commentz=post_data.commentz
+        )
+
+        # Add to database
+        db.add(db_post)
+        db.commit()
+        db.refresh(db_post)
+
+        return db_post
+
+    except IntegrityError as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail="Database integrity error. Please check your data."
+        )
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"An error occurred while creating the post: {str(e)}"
+        )
